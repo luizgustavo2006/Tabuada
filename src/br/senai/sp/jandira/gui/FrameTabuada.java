@@ -8,10 +8,12 @@ import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
@@ -45,6 +47,13 @@ public class FrameTabuada {
 		labelTabuada.setForeground(Color.RED);
 		labelTabuada.setFont(fTabuada);
 
+		// Componente Icone
+		ImageIcon logo = new ImageIcon("src/img/matematica.png");
+		JLabel labelIcone = new JLabel();
+		labelIcone.setIcon(logo);
+		labelIcone.setBounds(20, 20, 100, 100);
+		
+		
 		// Componente Texto
 		JTextArea labelTexto = new JTextArea();
 		Font fTexto = new Font("SansSerif", Font.ROMAN_BASELINE, 12);
@@ -66,6 +75,7 @@ public class FrameTabuada {
 		labelMultiplicando.setFont(fMultiplicadores);
 		textFieldMultiplicando.setBounds(270, 122, 160, 35);
 		textFieldMultiplicando.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+		textFieldMultiplicando.setHorizontalAlignment(JTextField.RIGHT);
 
 		// Componente Minimo Multiplicador
 		JLabel labelMinimoMultiplicador = new JLabel();
@@ -76,6 +86,7 @@ public class FrameTabuada {
 		labelMinimoMultiplicador.setFont(fMultiplicadores);
 		textFieldMinimoMultiplicador.setBounds(270, 178, 160, 35);
 		textFieldMinimoMultiplicador.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+		textFieldMinimoMultiplicador.setHorizontalAlignment(JTextField.RIGHT);
 
 		// Componente Maximo Multiplicador
 		JLabel labelMaximoMultiplicador = new JLabel();
@@ -86,6 +97,7 @@ public class FrameTabuada {
 		labelMaximoMultiplicador.setFont(fMultiplicadores);
 		textFieldMaximoMultiplicador.setBounds(270, 233, 160, 35);
 		textFieldMaximoMultiplicador.setBorder(BorderFactory.createLineBorder(Color.BLUE));
+		textFieldMaximoMultiplicador.setHorizontalAlignment(JTextField.RIGHT);
 
 		// Componente Botão Calcular
 		JButton buttonCalcular = new JButton();
@@ -114,9 +126,9 @@ public class FrameTabuada {
 
 		// Componente de Aparição dos Resultados
 		JList<String> listaResultado = new JList<String>();
-		Color corLista = new Color(255,255,200);
+		Color corLista = new Color(255, 255, 200);
 		listaResultado.setBackground(corLista);
-		
+
 		JScrollPane scroll = new JScrollPane(listaResultado);
 		scroll.setBounds(39, 400, 400, 200);
 
@@ -127,6 +139,7 @@ public class FrameTabuada {
 		painel.add(labelMinimoMultiplicador);
 		painel.add(labelMaximoMultiplicador);
 		painel.add(labelResultado);
+		painel.add(labelIcone);
 
 		// Painel de aparição dos TextField
 		painel.add(textFieldMultiplicando);
@@ -137,7 +150,7 @@ public class FrameTabuada {
 		// Painel de aparição dos Botões
 		painel.add(buttonCalcular);
 		painel.add(buttonLimpar);
-		
+
 		// Definindo que Tela é visivel ou não
 		tela.setVisible(true);
 
@@ -149,26 +162,64 @@ public class FrameTabuada {
 			public void actionPerformed(ActionEvent e) {
 
 				Tabuada tabuada = new Tabuada();
-				tabuada.multiplicando = Integer.parseInt(textFieldMultiplicando.getText());
-				tabuada.minMultiplicador = Integer.parseInt(textFieldMinimoMultiplicador.getText());
-				tabuada.maxMultiplicador = Integer.parseInt(textFieldMaximoMultiplicador.getText());
+				if (textFieldMultiplicando.getText().matches("[^0-9]")) {
+					JOptionPane.showMessageDialog(tela, "PorFavor, escreva um número INTEIRO para o Multiplicando!");
+					textFieldMultiplicando.setText("");;
+				} else if (textFieldMultiplicando.getText().isEmpty()) {
+					JOptionPane.showMessageDialog(tela, "PorFavor, escreva um número para o Multiplicando!");
+					textFieldMultiplicando.requestFocus();
+				} else if (textFieldMinimoMultiplicador.getText().matches("[^0-9]")) {
+					JOptionPane.showMessageDialog(tela, "PorFavor, escreva um número INTEIRO ser o Minimo Multiplicador!");
+					textFieldMinimoMultiplicador.setText("");
+				}else if (textFieldMinimoMultiplicador.getText().isEmpty()) {
+					JOptionPane.showMessageDialog(tela, "PorFavor, escreva um número para ser o Minimo Multiplicador!");
+					textFieldMinimoMultiplicador.requestFocus();
+				} else if (textFieldMaximoMultiplicador.getText().matches("[^0-9]")) {
+					JOptionPane.showMessageDialog(tela, "PorFavor, escreva um número INTEIRO para o Maximo Multiplicador!");
+					textFieldMaximoMultiplicador.setText("");
+				}else if (textFieldMaximoMultiplicador.getText().isEmpty()) {
+					JOptionPane.showMessageDialog(tela, "PorFavor, escreva um número para ser o Maximo Multiplicador!");
+					textFieldMaximoMultiplicador.requestFocus();
+				} else if (Integer.parseInt(textFieldMultiplicando.getText()) > 1000||
+					 Integer.parseInt(textFieldMinimoMultiplicador.getText()) > 1000||
+					 Integer.parseInt(textFieldMaximoMultiplicador.getText()) > 1000) {
+					JOptionPane.showMessageDialog(tela, "Os valores devem ser menor ou igual a 1000!", "ERRO",
+							JOptionPane.OK_OPTION);
+				} else {
+					tabuada.multiplicando = Integer.parseInt(textFieldMultiplicando.getText());
+					tabuada.minMultiplicador = Integer.parseInt(textFieldMinimoMultiplicador.getText());
+					tabuada.maxMultiplicador = Integer.parseInt(textFieldMaximoMultiplicador.getText());
+				if(tabuada.maxMultiplicador < tabuada.minMultiplicador) {
+						JOptionPane.showMessageDialog(tela, "Multiplicador mínimo maior que o máximo", "ERRO", JOptionPane.OK_OPTION);
+						textFieldMultiplicando.setText("");
+						textFieldMinimoMultiplicador.setText("");
+						textFieldMaximoMultiplicador.setText("");
 
+				} else {
 				DefaultListModel<String> listModel = new DefaultListModel<String>();
 				for (String linhaTabuada : tabuada.getTabuada()) {
 					listModel.addElement(linhaTabuada);
+
 				}
 
 				listaResultado.setModel(listModel);
-
 			}
-
+			}
+			}
 		});
-		
+
 		buttonLimpar.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
-				
+				if (e.getSource() == buttonLimpar) {
+					textFieldMultiplicando.setText(null);
+					textFieldMinimoMultiplicador.setText(null);
+					textFieldMaximoMultiplicador.setText(null);
+
+					DefaultListModel<String> listModel = new DefaultListModel<String>();
+					listaResultado.setModel(listModel);
+				}
+
 			}
 		});
 	}
